@@ -1,0 +1,129 @@
+{% extends 'clean.html.twig' %}
+
+
+{% block javascripts %}
+  
+ {{ parent() }}
+ <!-- LEAFLET -->
+
+  
+{% endblock %}
+
+
+{% block body %}
+
+
+
+<!-- MAPPA -->
+ 
+
+ <h1>MAPPA</h1>
+<div class="row">
+<div id="mapid" style="width: 800px; height: 600px; border: 1px solid #ccc"></div>
+
+  
+<script>
+    // DICHIARAZIONE SENZA GEOJSON
+    //DICHIARAZIONE CON GEOJSON
+    var mymap = L.map('mapid').setView([43.44,13.6], 13);
+
+
+	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+		id: 'mapbox.streets'
+	}).addTo(mymap);
+
+
+//AGGIUNGO POLIGONO
+
+//PRIMO VALORE LONGITUDINE
+//SECONDO LATITUDINE
+
+//AGGIUNGO UN POPUP AL POLIGONO
+
+//GESTISCO EVENTI
+//CREO UN POP UO CHE MI MOSTRA LE COORDINATE DOVE STO CLICCANDO
+
+var popup = L.popup();
+
+
+
+//PROVO GEOJSON
+var uno = {
+    "color": "#FFFF00",
+    "weight": 5,
+    "opacity": 0.65
+};
+
+
+
+var due = {
+    "color": "#FFA420",
+    "weight": 5,
+    "opacity": 0.65
+};
+var tre = {
+    "color": "#EC7C26",
+    "weight": 5,
+    "opacity": 0.65
+};
+
+
+var quattro = {
+    "color": "#E55137",
+    "weight": 5,
+    "opacity": 0.65
+};
+
+var cinque = {
+    "color": "#A2231D",
+    "weight": 5,
+    "opacity": 0.65
+};
+
+
+ {% for variab in arrayquery %}
+
+var stile;
+if ({{ variab.valorepescato | raw }} == 1) stile = uno;
+if ({{ variab.valorepescato | raw }} == 2) stile = due;
+if ({{ variab.valorepescato | raw }} == 3) stile = tre;
+if ({{ variab.valorepescato | raw }} == 4) stile = quattro;
+if ({{ variab.valorepescato | raw }} == 5) stile = cinque ;
+
+	 
+//DEFINISCO LA FUNZIONE
+function onEachFeature(feature, layer) {
+		var popupContent = "<p>VALORE PESCATO: {{variab.valorepescato}} </p><p>TIPOLOGIA DI PESCA: {{variab.tipologiapesca}} </p>";
+
+		if (feature.properties && feature.properties.popupContent) {
+			popupContent += feature.properties.popupContent;
+		}
+
+		layer.bindPopup(popupContent);
+	}
+	
+
+
+L.geoJSON({{ variab.st_asgeojson | raw }}, {
+		style: stile,
+
+		onEachFeature: onEachFeature,
+
+}).addTo(mymap);
+    {% endfor %}
+	
+
+</script>
+
+    <div id='delete'>Delete Features</div>
+    <a href='#' id='export'>Export Features</a>
+
+
+</div>
+
+{% endblock %}
+
